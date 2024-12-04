@@ -36,8 +36,7 @@ const (
 )
 
 var (
-	defaultPort    = 23
-	defaultTimeout = 10 * time.Second
+	defaultPort = 23
 
 	defaultUsernameRe = "[\\w\\d-_]+ username:"
 	defaultPasswordRe = "Password:"
@@ -51,7 +50,6 @@ type Client struct {
 
 	username string
 	password string
-	timeout  time.Duration
 	verbose  bool
 
 	logWriter *bufio.Writer
@@ -62,14 +60,15 @@ type Client struct {
 
 	reader *bufio.Reader
 	writer *bufio.Writer
-	conn   net.Conn
+
+	conn     net.Conn
+	deadline time.Duration
 }
 
 func NewClient(address string, opts ...Option) *Client {
 	cli := &Client{Address: address}
 	dftOpts := []Option{
 		WithPort(defaultPort),
-		WithTimeout(defaultTimeout),
 		WithVerbose(false),
 
 		WithPromptUsername(defaultUsernameRe),
@@ -89,9 +88,6 @@ func NewClient(address string, opts ...Option) *Client {
 func (tc *Client) setDefaultParams() {
 	if tc.Port == 0 {
 		tc.Port = defaultPort
-	}
-	if tc.timeout == 0 {
-		tc.timeout = defaultTimeout
 	}
 	if tc.verbose && tc.logWriter == nil {
 		tc.logWriter = bufio.NewWriter(os.Stdout)
@@ -126,7 +122,7 @@ func (tc *Client) Dial() (err error) {
 
 	tc.reader = bufio.NewReader(tc.conn)
 	tc.writer = bufio.NewWriter(tc.conn)
-	err = tc.conn.SetReadDeadline(time.Now().Add(tc.timeout))
+	err = tc.conn.SetReadDeadline(time.Now().Add(tc.deadline))
 	if err != nil {
 		return
 	}
@@ -138,7 +134,7 @@ func (tc *Client) Dial() (err error) {
 }
 
 func (tc *Client) Close() {
-	tc.conn.Close()
+	_ = tc.conn.Close()
 }
 
 func (tc *Client) skipSBSequence() (err error) {

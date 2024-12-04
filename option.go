@@ -13,9 +13,9 @@ func WithPort(port int) Option {
 	}
 }
 
-func WithTimeout(timeout time.Duration) Option {
+func WithDeadline(deadline time.Duration) Option {
 	return func(g *Client) {
-		g.timeout = timeout
+		g.deadline = deadline
 	}
 }
 
