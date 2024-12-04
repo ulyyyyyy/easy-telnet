@@ -1,3 +1,3 @@
-module github.com/ulyyyyyy/easy-telnet-telnet
+module github.com/ulyyyyyy/easy-telnet
 
 go 1.22
