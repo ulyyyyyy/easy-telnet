@@ -122,9 +122,10 @@ func (tc *Client) Dial() (err error) {
 
 	tc.reader = bufio.NewReader(tc.conn)
 	tc.writer = bufio.NewWriter(tc.conn)
-	err = tc.conn.SetDeadline(time.Now().Add(tc.deadline))
-	if err != nil {
-		return
+	if tc.deadline > 0 {
+		if err = tc.conn.SetDeadline(time.Now().Add(tc.deadline)); err != nil {
+			return
+		}
 	}
 
 	tc.log("Waiting for the first banner")
