@@ -17,9 +17,13 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+# idea files
+/.idea/
+
+# project generates dir
+/logs/
+.log
+/resources/
+
 # Go workspace file
 go.work
-go.work.sum
-
-# env file
-.env
